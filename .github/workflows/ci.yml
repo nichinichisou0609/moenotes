@@ -26,4 +26,5 @@ jobs:
       - run: bun run check:search-seo
       - run: bun run check
       - run: bun test tests/github-build.test.ts tests/site-artifact.test.ts tests/site-release-build.test.ts tests/build-store-ci.test.ts
+      - run: bun test tests/deck-answer.test.ts tests/deck-goals.test.ts tests/deck-goal-ui.test.tsx tests/deck-worker.test.ts tests/deck-runtime-source.test.ts
       - run: bun server/main.ts --self-check

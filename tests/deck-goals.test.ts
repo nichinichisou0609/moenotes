@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { computes, computesGoal, defaultDeckGoalInput, effectiveAggregation, goalGap, heldEvent, jstTicks, parseCapabilities, recommendationRequest, type DeckEvent, type DeckGoalInput } from "../src/lib/deck/goals";
+import { computes, computesGoal, computesSelectedObjective, defaultDeckGoalInput, effectiveAggregation, goalGap, heldEvent, jstTicks, parseCapabilities, recommendationRequest, type DeckEvent, type DeckGoalInput } from "../src/lib/deck/goals";
 import { parseMasterDate } from "../src/lib/schedule";
 
 const event: DeckEvent = { id: 7, name: "Event", startAt: "2030/01/01 15:00:00+08:00", endAt: "2030/01/09 20:59:59+08:00", itemId: 90,
@@ -139,6 +139,15 @@ describe("recommendation request", () => {
 });
 
 describe("capabilities", () => {
+  test("loading and unsupported engines block the selected Maximum without changing its preference", () => {
+    const input = { ...defaultDeckGoalInput("free"), aggregation: "maximum" as const };
+    const legacy = { goals: ["freeLive"], metrics: { freeLive: ["score"] }, accuracy: { great: true, just: true } };
+    expect(computesSelectedObjective(null, input)).toBe(false);
+    expect(computesSelectedObjective(legacy, input)).toBe(false);
+    expect(input.aggregation).toBe("maximum");
+    expect(computesSelectedObjective(null, { ...input, aggregation: "expected" })).toBe(true);
+    expect(computesSelectedObjective(null, { ...input, goal: "battle" })).toBe(true);
+  });
   const capabilities = parseCapabilities(JSON.stringify({ goals: ["freeLive", "power"], metrics: { freeLive: ["score", "eventPoints"], power: [] }, accuracy: { great: false, just: false } }))!;
   test("decide which goals and venues run", () => {
     expect(computesGoal(capabilities, "free")).toBe(true);

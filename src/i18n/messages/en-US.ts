@@ -28,7 +28,7 @@ export const enUS = {
     consent: "This application can read the full content of the selected archives. Only authorize applications you trust.",
   },
   deckWorkspace: {
-    objective: {"label": "Search objective", "expected": "Average performance", "maximum": "Theoretical maximum", "expectedNote": "Keeps your play conditions and ranks teams by the average over random skill orders, LUCK and other random outcomes.", "maximumNote": "For Free and Challenge Live, finds the highest value reachable through skill orders and random skill outcomes under your play conditions. The maximum is proved only when the search completes; it is not guaranteed every live.", "unavailable": "Theoretical maximum is unavailable for these conditions. Choose Average performance to search.", "loading": "Checking whether theoretical maximum is available…", "gekisouNote": "Gekisou modes use Average performance. Theoretical maximum is available for Free and Challenge Live."},
+    objective: {"label": "Search objective", "expected": "Average performance", "maximum": "Theoretical maximum", "expectedNote": "Keeps your current judgements and other conditions, and ranks teams by average performance across skill orders. Gekisou modes also include the applicable random outcomes.", "maximumNote": "For Free and Challenge Live, keeps your current judgements and other conditions, and finds the theoretical maximum across skill orders. If skills have probabilistic activation conditions, they are calculated using the model declared by the engine. Only a complete, proven search certifies the maximum within that model.", "unavailable": "Theoretical maximum is unavailable for these conditions. Choose Average performance to search.", "loading": "Checking whether theoretical maximum is available…", "gekisouNote": "Gekisou modes use Average performance. Theoretical maximum is available for Free and Challenge Live."},
     "arenaSong": "Arena song",
     "chooseArena": "Choose an Arena song",
     "noArena": "No Arena songs in this server’s current data",
@@ -593,7 +593,10 @@ export const enUS = {
     "solver": {
       "maximumLabel": {"score": "Theoretical maximum score", "challengePoints": "Maximum CP earned per live", "eventPoints": "Maximum points per live", "eventItems": "Maximum badges per live"},
       "deterministicLabel": {"score": "Score", "challengePoints": "CP earned per live", "eventPoints": "Points per live", "eventItems": "Badges per live"},
-      "bestOrder": "Skill order for the highest objective value",
+      "maximumProven": "Proven optimal within the model",
+      "maximumModelDeclared": "The engine has declared the random model used for this calculation. The optimality proof applies to that model.",
+      "maximumModelUnspecified": "This engine did not supply a recognized Maximum model declaration, so no optimality proof is displayed.",
+      "bestOrder": "Skill order for the model maximum",
       "metricLabel": {"score": "Expected score"},
       "playSummary": "Declared play: {notes} judged notes · {misses} Misses",
       "start": "Build team",

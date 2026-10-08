@@ -49,8 +49,10 @@ test("the objective has native labelled radio choices, with maximum gated by eng
   const ready = render({ ...defaultDeckGoalInput("free"), aggregation: "maximum" }, { ...cap, aggregations: { maximum: { freeLive: ["score"] } } });
   expect(ready).toContain('checked="" value="maximum"');
   expect(ready).not.toContain('disabled=""');
-  expect(ready).toContain("not guaranteed every live");
-  expect(ready).toContain("proved only when the search completes");
+  expect(ready).toContain("current judgements and other conditions");
+  expect(ready).toContain("If skills have probabilistic activation conditions");
+  expect(ready).toContain("complete, proven search");
+  expect(ready).not.toContain("random seed");
   const unavailable = render({ ...defaultDeckGoalInput("free"), aggregation: "maximum" });
   expect(unavailable).toMatch(/<input[^>]*disabled=""[^>]*checked=""[^>]*value="maximum"/);
   expect(unavailable).toContain("unavailable for these conditions");
@@ -113,6 +115,57 @@ test("unproven results distinguish engine time limits, refinement stops and lega
     const stopped = render(true);
     expect(stopped).toContain("Stopped · best so far");
     expect(stopped).not.toContain("Time limit reached");
+  }
+});
+
+test("Maximum proof and model labels belong to a final complete engine result", () => {
+  const maximumModel = { kind: "independentNativeDrawSupport", performanceOrders: 120,
+    ordinarySkillDraw: "binary32OfSystemRandomNextDouble", ordinarySkillComparison: "strictLessThan",
+    rootSeedRealizability: "notEstablished", bestOrderCertificate: "performanceOrderAndTerminalValuesOnly",
+    streamBaseSeedRole: "notAConstraint" };
+  const noop = () => {};
+  for (const final of [false, true]) for (const exitReason of ["exhausted", "timeLimit", "refinementRequired", undefined]) {
+    const answer = parseDeckAnswer(JSON.stringify({ format: "ournotes-deck.account-recommendation/1", final, status: "ok", result: {
+      goal: { kind: "freeLive" }, metric: { kind: "score" }, aggregation: "maximum", maximumModel,
+      phase: "done", exitReason, optimality: { proven: true }, teams: [] } }));
+    const html = renderToStaticMarkup(<DeckResult locale="en-US" goal="free" stale={false} timeLimit={60} box={null}
+      catalog={{ members: [], snaps: [] }} linked={false} busy={false} job={{ status: "done", key: "maximum", answer, stopped: false }}
+      onStop={noop} onRerun={noop} onEditCard={noop} onPlayer={noop} onAnswerAll={noop} />);
+    expect(html.includes("Proven optimal within the model")).toBe(final && exitReason === "exhausted");
+    expect(html).toContain('data-maximum-model="independentNativeDrawSupport"');
+    expect(html).toContain("proof applies to that model");
+    expect(html).not.toContain("root seed");
+  }
+});
+
+test("Maximum proof requires a recognized declaration matching the computed goal", () => {
+  const live = { kind: "independentNativeDrawSupport", performanceOrders: 120,
+    ordinarySkillDraw: "binary32OfSystemRandomNextDouble", ordinarySkillComparison: "strictLessThan",
+    rootSeedRealizability: "notEstablished", bestOrderCertificate: "performanceOrderAndTerminalValuesOnly",
+    streamBaseSeedRole: "notAConstraint" };
+  const deterministic = { kind: "deterministic", performanceOrders: 1,
+    rootSeedRealizability: "notApplicable", bestOrderCertificate: "notApplicable" };
+  const cases = [
+    { goal: "freeLive", model: live, proven: true }, { goal: "challengeLive", model: live, proven: true },
+    { goal: "power", model: deterministic, proven: true }, { goal: "skip", model: deterministic, proven: true },
+    { goal: "freeLive", model: deterministic, proven: false }, { goal: "skip", model: live, proven: false },
+    { goal: "power", model: live, proven: false }, { goal: "battleLive", model: live, proven: false },
+    { goal: "freeLive", model: undefined, proven: false }, { goal: "freeLive", model: {}, proven: false },
+    { goal: "freeLive", model: { ...live, rootSeedRealizability: "established" }, proven: false },
+    { goal: undefined, model: live, proven: false },
+  ];
+  const noop = () => {};
+  for (const value of cases) {
+    const answer = parseDeckAnswer(JSON.stringify({ format: "ournotes-deck.account-recommendation/1", final: true, status: "ok", result: {
+      goal: { kind: value.goal }, aggregation: "maximum", maximumModel: value.model,
+      phase: "done", exitReason: "exhausted", optimality: { proven: true }, teams: [] } }));
+    const html = renderToStaticMarkup(<DeckResult locale="en-US" goal="free" stale={false} timeLimit={60} box={null}
+      catalog={{ members: [], snaps: [] }} linked={false} busy={false} job={{ status: "done", key: "maximum", answer, stopped: false }}
+      onStop={noop} onRerun={noop} onEditCard={noop} onPlayer={noop} onAnswerAll={noop} />);
+    expect(html.includes('class="dr-proven"')).toBe(value.proven);
+    if (!value.model || !("kind" in value.model) || value.model.kind !== "deterministic" && value.model !== live) {
+      expect(html).toContain("did not supply a recognized Maximum model declaration");
+    }
   }
 });
 

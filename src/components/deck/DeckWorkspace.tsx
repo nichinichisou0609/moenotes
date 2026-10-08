@@ -13,7 +13,7 @@ import { mergeBoxes, parseBox, type BoxCard, type CardBox, type CardFieldName, t
 import { answerDeckFields } from "@/lib/box/deck-answers";
 import { createDeckPreview } from "@/lib/box/deck-preview";
 import { boxAccountJson, gameSaveAccountJson } from "@/lib/deck/account-envelope";
-import { CHALLENGE_POINT_COSTS, DEFAULT_DECK_GOAL, EVENT_GOALS, EVERYDAY_GOALS, MAX_BOOST, computes, computesGoal, defaultDeckGoalInput, goalGap, heldEvent,
+import { CHALLENGE_POINT_COSTS, DEFAULT_DECK_GOAL, EVENT_GOALS, EVERYDAY_GOALS, MAX_BOOST, computes, computesGoal, computesSelectedObjective, defaultDeckGoalInput, goalGap, heldEvent,
   playsGekisou, readsAccuracy, effectiveAggregation, isChallengeInput, isNetworkInput, recommendationRequest, solverGoalKind, goalVenues, isEventPayoffGoal, type ChallengePointCost, type DeckEvent, type DeckGoal, type DeckGoalInput, type DeckVenue, type DeckArenaMusic } from "@/lib/deck/goals";
 import { displayUtcLabel, formatMasterDate, parseMasterDate } from "@/lib/schedule";
 import { useDisplayTimeZone } from "@/lib/schedule/use-display-time-zone";
@@ -192,7 +192,7 @@ export default function DeckWorkspace(props: DeckWorkspaceProps) {
   const goal = goalInput.goal;
   const effectiveInput: DeckGoalInput = { ...goalInput, aggregation: effectiveAggregation(goalInput) };
   const gap = goalGap(effectiveInput, event);
-  const supported = capabilities ? computes(capabilities, effectiveInput) : effectiveInput.aggregation === "expected";
+  const supported = computesSelectedObjective(capabilities, effectiveInput);
   const idsOf = (keys: readonly string[], kind: CardKind) => keys.flatMap(key => {
     const card = box?.cards.find(item => item.key === key && item.kind === kind);
     return card?.identity.value ? [card.identity.value] : [];

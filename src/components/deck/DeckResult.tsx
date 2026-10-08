@@ -50,6 +50,12 @@ export default function DeckResult(props: DeckResultProps) {
   const metric = result?.metric ?? (props.goal === "power" ? "power" : ["eventPoints", "challengePoints", "eventItems"].includes(props.goal) ? props.goal : "score");
   const aggregation = result?.aggregation ?? "expected";
   const deterministic = result?.goalKind === "skip" || metric === "power";
+  const declaredMaximum = result?.maximumModel === "independentNativeDrawSupport"
+    ? ["freeLive", "challengeLive"].includes(result.goalKind ?? "") && metric !== "power"
+    : result?.maximumModel === "deterministic" && (result.goalKind === "power" && metric === "power" || result.goalKind === "skip" && metric !== "power");
+  const proven = !!optimality?.proven && answer?.final === true
+    && (aggregation === "expected" || declaredMaximum)
+    && (result?.exitReason === "exhausted" || aggregation === "expected" && result?.exitReason === null);
   return <div className="dr-result" data-state={running ? "running" : "done"} aria-busy={running}>
     {props.stale && !running && <div className="dr-stale" role="status"><strong>{tr("stale")}</strong><button type="button" onClick={props.onRerun}>{tr("rerun")}</button></div>}
     <div className="dr-status">
@@ -59,16 +65,18 @@ export default function DeckResult(props: DeckResultProps) {
           {props.timeLimit !== null && <small className="dr-remaining">{tr("remaining", { n: Math.max(0, props.timeLimit - (result?.elapsedMs ?? 0) / 1000).toFixed(0) })}</small>}</div>
         <progress className="dr-progress" max={1} value={optimality?.fraction ?? undefined} aria-label={tr("progressLabel")} />
         <button type="button" className="dr-stop" onClick={props.onStop}>{tr("stop")}</button>
-      </> : optimality?.proven ? <div className="dr-proven"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" aria-hidden="true"><path d="m3.5 8 3 3 6-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
-        <ProofLink locale={locale} anchor="proven" label={tr("proven")} />{result?.elapsedMs !== null && result?.elapsedMs !== undefined && <small>{tr("elapsed", { n: (result.elapsedMs / 1000).toFixed(1) })}</small>}</div>
+      </> : proven ? <div className="dr-proven"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" aria-hidden="true"><path d="m3.5 8 3 3 6-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
+        <ProofLink locale={locale} anchor="proven" label={tr(aggregation === "maximum" && !deterministic ? "maximumProven" : "proven")} />{result?.elapsedMs !== null && result?.elapsedMs !== undefined && <small>{tr("elapsed", { n: (result.elapsedMs / 1000).toFixed(1) })}</small>}</div>
         : <div className="dr-unproven"><ProofLink locale={locale} anchor="unproven" label={tr(job.status === "done" && job.stopped ? "stoppedUnproven" : result?.exitReason === "timeLimit" ? "timedOutUnproven" : "unproven")} /></div>}
-      {optimality && !optimality.proven && optimality.upperBound !== null && optimality.lowerBound !== null && <p className="dr-bounds">
+      {optimality && !proven && optimality.upperBound !== null && optimality.lowerBound !== null && <p className="dr-bounds">
         {tr("bounds", { best: formatValue(optimality.lowerBound, metric, locale), limit: formatValue(optimality.upperBound, metric, locale) })}
         {optimality.lowerBound > 0 && <span> · {tr("gapPercent", { n: percent(Math.max(0, optimality.upperBound - optimality.lowerBound) / optimality.lowerBound) })}</span>}</p>}
       {result && !result.coversAllOwnedCards && <p className="dr-note">{tr("partialBox")}</p>}
     </div>
     {result && !deterministic && <p className="dr-objective"><strong>{t(locale, `deckWorkspace.objective.${aggregation}`)}</strong>
       <span>{t(locale, `deckWorkspace.objective.${aggregation}Note`)}</span></p>}
+    {result && aggregation === "maximum" && !deterministic && <p className="dr-note" data-maximum-model={result.maximumModel}>
+      {tr(result.maximumModel === "independentNativeDrawSupport" ? "maximumModelDeclared" : "maximumModelUnspecified")}</p>}
     {result?.play && <p className="dr-note">{tr("playSummary", { notes: result.play.judged, misses: result.play.misses })}</p>}
     {result && result.teams.length > 0 ? <ol className="dr-teams">{result.teams.map((team, index) => <TeamCard key={index} {...props} team={team} metric={metric} aggregation={aggregation} deterministic={deterministic} first={index === 0} final={!running} />)}</ol>
       : <p className="dr-muted">{tr(running ? "searching" : "noTeam")}</p>}

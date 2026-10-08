@@ -19,7 +19,7 @@ export const zhTW = {
     developer: "開發者應用程式", developerHint: "建立應用程式即取得憑證，可立即使用。金鑰請只保存在伺服器端。", grants: "第三方存檔授權", grantsHint: "僅分享你選擇的存檔；撤銷後將停止後續請求。", name: "應用程式名稱", website: "HTTPS 網站", description: "說明", create: "建立應用程式", emptyApps: "尚無應用程式。", clientId: "Client ID", invite: "複製邀請連結", copy: "複製", copied: "已複製", lookup: "查詢應用程式", choose: "選擇已上傳存檔", emptyArchives: "沒有可用的已上傳存檔。", authorize: "授權所選存檔", emptyGrants: "尚無授權。", revoke: "撤銷", confirmRevoke: "撤銷此授權？", cancel: "取消", refresh: "重新整理", generate: "產生金鑰", rotate: "輪替金鑰", revokeSecret: "撤銷金鑰", keyLimit: "已有兩個有效金鑰。請完成新金鑰部署後，手動撤銷舊金鑰。", confirmRotate: "產生新金鑰？舊金鑰會保留，請完成部署後手動撤銷。", secret: "用戶端金鑰", secretHint: "僅顯示一次。請安全保存於伺服器，切勿放入瀏覽器程式碼。", dismiss: "隱藏金鑰", secretActive: "金鑰有效", secretMissing: "沒有有效金鑰", ready: "可立即使用", disabled: "已停用", error: "請求失敗，請檢查輸入後重試。", success: "已儲存", unavailable: "開放平台暫時無法使用。", consent: "此應用程式可讀取所選存檔的完整內容，請只授權你信任的應用程式。",
   },
   deckWorkspace: {
-    objective: {"label": "最佳化目標", "expected": "平均表現", "maximum": "理論最高", "expectedNote": "保持目前演奏條件，依隨機技能順序及 LUCK 等隨機結果的平均表現排序。", "maximumNote": "適用於自由ライブ與挑戰ライブ：保持目前演奏條件，尋找技能順序及隨機技能結果能達到的最高值。只有搜尋完成後才能證明最高值，並非每局都能達到。", "unavailable": "目前條件尚不支援理論最高，可選擇平均表現繼續搜尋。", "loading": "正在確認理論最高是否可用…", "gekisouNote": "激奏模式依平均表現搜尋。自由ライブ與挑戰ライブ可選擇理論最高。"},
+    objective: {"label": "最佳化目標", "expected": "平均表現", "maximum": "理論最高", "expectedNote": "保持目前判定和其他條件，依技能順序的平均表現排序；激奏模式還會計算適用的隨機結果。", "maximumNote": "自由ライブ與挑戰ライブ：保持目前判定和其他條件，在技能順序中尋找理論最高值；若技能有機率觸發條件，則依引擎聲明的模型計算。完整搜尋且證明成立後，確認模型內最高值。", "unavailable": "目前條件尚不支援理論最高，可選擇平均表現繼續搜尋。", "loading": "正在確認理論最高是否可用…", "gekisouNote": "激奏模式依平均表現搜尋。自由ライブ與挑戰ライブ可選擇理論最高。"},
     "arenaSong": "Arena 歌曲",
     "chooseArena": "選擇 Arena 歌曲",
     "noArena": "目前伺服器資料中沒有 Arena 歌曲",
@@ -584,7 +584,10 @@ export const zhTW = {
     "solver": {
       "maximumLabel": {"score": "理論最高分數", "challengePoints": "每局最高新增 CP", "eventPoints": "每局最高 PT", "eventItems": "每局最高徽章"},
       "deterministicLabel": {"score": "分數", "challengePoints": "每局新增 CP", "eventPoints": "每局 PT", "eventItems": "每局徽章"},
-      "bestOrder": "達到目標最高值的技能順序",
+      "maximumProven": "已證明模型內最優",
+      "maximumModelDeclared": "引擎已聲明本次計算使用的隨機模型；最優性證明僅適用於該模型。",
+      "maximumModelUnspecified": "此引擎未提供可辨識的最高值模型說明，暫不顯示最優性證明。",
+      "bestOrder": "模型最高值對應的技能順序",
       "metricLabel": {"score": "期望分數"},
       "playSummary": "指定演奏：{notes} 個判定音符 · {misses} 個 Miss",
       "start": "開始組卡",
