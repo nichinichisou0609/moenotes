@@ -171,6 +171,10 @@ export function computes(capabilities: DeckSolverCapabilities, input: Pick<DeckG
   const metrics = capabilities.aggregations?.[aggregation] ?? (aggregation === "expected" ? capabilities.metrics : {});
   return metric === null || (metrics[kind] ?? []).includes(metric);
 }
+/** Loading or legacy capabilities must never silently substitute Expected for a selected Maximum. */
+export function computesSelectedObjective(capabilities: DeckSolverCapabilities | null, input: DeckGoalInput): boolean {
+  return capabilities ? computes(capabilities, input) : effectiveAggregation(input) === "expected";
+}
 /** Whether any venue of a goal is computed; a goal whose venues are all unsupported is shown as coming soon. */
 export function computesGoal(capabilities: DeckSolverCapabilities, goal: DeckGoal): boolean {
   const venues: readonly DeckVenue[] = isEventPayoffGoal(goal) ? goalVenues(goal) : ["freeLive"];

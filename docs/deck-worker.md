@@ -136,3 +136,51 @@ other files is refused, and a repeated identical `init` answers with the same `r
   as `stopped` with its last `progress` result (or `null`), which the page shows as the answer. A new `run` while one
   is running does the same, resolving the old job as `superseded`. Stopping a job that still waits for `ready` keeps
   the Worker for the next run.
+
+## Targeted synthetic browser regression
+
+`scripts/test-deck-objective-browser.mjs` exercises the production `DeckObjective`, `DeckGoalConditions`, request
+builder, capability gate and `DeckWorkerClient` in Chromium, with the actual `public/deck` Worker and recommendation
+WASM. It uses the explicitly synthetic account corpus exported by ournotes-deck's `adapter_fixture_export` test and a
+`wasm-bindgen --target web` package. It does not need or certify game resources, the deployed site, full page bootstrap,
+mobile performance or the real collection search matrix.
+
+Install the site's dependencies as usual. The runner also needs `esbuild`, `playwright` and a Playwright Chromium
+installation; these can be supplied from separate test tooling without changing the site's dependency lockfile.
+`DECK_BROWSER_ESBUILD_MODULE` and `DECK_BROWSER_PLAYWRIGHT_MODULE` optionally name their module entry points.
+`DECK_BROWSER_CHROMIUM` optionally names an existing Chromium executable. Run:
+
+```sh
+node scripts/test-deck-objective-browser.mjs SYNTHETIC_CORPUS WEB_ENGINE_DIRECTORY REPORT_JSON
+```
+
+The engine directory contains `ournotes_recommend_wasm.js` and `ournotes_recommend_wasm_bg.wasm`. The runner serves all
+files on an ephemeral loopback HTTP port and verifies the exact file sizes and SHA-256 values through the production
+Worker. It runs both Expected and Maximum for Free and Challenge Live, verifies that switching changes only the
+aggregation, checks Gekisou's hidden switch and effective Expected objective, and checks that returning to Free restores
+Maximum. Loading or unsupported Maximum remains selected and disabled, with searches blocked. The report identifies
+its synthetic scope, browser version, runtime hashes, request hashes and completed search checks.
+
+## Ordinary live data and the generic model boundary
+
+The public [master snapshot `1712ed6`](https://github.com/StarMoe-org/moenotes-masterdata/tree/1712ed6ded20dd9a7df0d154ce021c20ca0536fa)
+contains no probability condition `4011` referenced by ordinary member or support skill effects in any of its four
+regions (`jp`, `hk-tw-mo`, `en`, `kr`). This check follows every condition-group reference, including activation,
+trigger, release and execution-limit reset conditions. In this snapshot, `4011` references occur only in the Gekisou
+member and Gekisou support effects. For ordinary Free and Challenge Live with fixed play conditions, each skill order
+therefore has a deterministic score: Expected averages the 120 legal orders and Maximum takes the highest selected
+goal value across them. The initial play assumption is all Perfect; switching the objective preserves any changed
+judgements and other conditions. Gekisou currently uses Expected, including applicable random outcomes for supported
+inputs.
+
+The engine's generic Maximum contract also supports compatible input containing probability-triggered ordinary
+skills; this capability does not imply that such a skill exists in the published master snapshot. For those inputs,
+`independentNativeDrawSupport` maximizes over outcomes allowed by each native draw, without proving that one integer
+PRNG root seed realizes the whole sequence. `bestOrder` records the skill order and terminal values, not a native
+seed replay certificate. This technical boundary does not add probability draws to an ordinary team that has none.
+
+Maximum answers carry `maximumModel`. The page recognizes the current independent native-draw support declaration,
+including `rootSeedRealizability: "notEstablished"`, `streamBaseSeedRole: "notAConstraint"` and
+`bestOrderCertificate: "performanceOrderAndTerminalValuesOnly"`. Missing or unknown metadata is displayed as
+unspecified; it never becomes a certified integer seed. A Maximum proof label requires a final, proven answer with
+`exitReason: "exhausted"` and a recognized model declaration matching the computed goal. Legacy Expected answers may omit the exit reason.

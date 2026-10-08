@@ -15,6 +15,25 @@ const answer = (patch: Record<string, unknown>) => JSON.stringify({ format: "our
     teams: [team(1000)], account: { cards: { coversAllOwnedCards: true } } }, ...patch });
 
 describe("answer", () => {
+  test("recognizes the declared Maximum model without interpreting an order as a seed certificate", () => {
+    const maximumModel = { kind: "independentNativeDrawSupport", performanceOrders: 120,
+      ordinarySkillDraw: "binary32OfSystemRandomNextDouble", ordinarySkillComparison: "strictLessThan",
+      rootSeedRealizability: "notEstablished", bestOrderCertificate: "performanceOrderAndTerminalValuesOnly",
+      streamBaseSeedRole: "notAConstraint" };
+    for (const final of [false, true]) {
+      const raw = JSON.parse(answer({ final }));
+      raw.result.aggregation = "maximum";
+      raw.result.maximumModel = maximumModel;
+      expect(parseDeckAnswer(JSON.stringify(raw)).result?.maximumModel).toBe("independentNativeDrawSupport");
+      raw.result.maximumModel = { ...maximumModel, rootSeedRealizability: "established" };
+      expect(parseDeckAnswer(JSON.stringify(raw)).result?.maximumModel).toBe("unspecified");
+      delete raw.result.maximumModel;
+      expect(parseDeckAnswer(JSON.stringify(raw)).result?.maximumModel).toBe("unspecified");
+      raw.result.maximumModel = { kind: "deterministic", performanceOrders: 1,
+        rootSeedRealizability: "notApplicable", bestOrderCertificate: "notApplicable" };
+      expect(parseDeckAnswer(JSON.stringify(raw)).result?.maximumModel).toBe("deterministic");
+    }
+  });
   test("reads teams, optimality and the layout", () => {
     const parsed = parseDeckAnswer(answer({}));
     expect(parsed.status).toBe("ok");
@@ -26,7 +45,7 @@ describe("answer", () => {
     expect(parsed.result?.exitReason).toBeNull();
   });
   test("retains the engine exit reason independently of the configured time limit", () => {
-    for (const exitReason of ["timeLimit", "refinementRequired", "complete"]) {
+    for (const exitReason of ["timeLimit", "refinementRequired", "exhausted"]) {
       const raw = JSON.parse(answer({}));
       raw.result.exitReason = exitReason;
       expect(parseDeckAnswer(JSON.stringify(raw)).result?.exitReason).toBe(exitReason);

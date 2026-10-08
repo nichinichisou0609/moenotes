@@ -21,6 +21,8 @@ export interface DeckTeam {
   layout: { members: number[]; snaps: (number | null)[] };
 }
 export interface DeckOptimality { proven: boolean; lowerBound: number | null; upperBound: number | null; fraction: number | null }
+/** A recognized Maximum domain declaration; absent or unknown metadata does not certify seed realizability. */
+export type DeckMaximumModel = "independentNativeDrawSupport" | "deterministic" | "unspecified";
 export interface DeckIssue { path: string; code: string; message: string }
 export type DeckPhase = "preprocess" | "search" | "proof" | "done";
 export interface DeckAnswer {
@@ -36,6 +38,7 @@ export interface DeckAnswer {
     coversAllOwnedCards: boolean;
     metric?: string;
     aggregation: DeckAggregation;
+    maximumModel: DeckMaximumModel;
     goalKind: string | null;
     exitReason: string | null;
     play?: { judged: number; misses: number } | null;
@@ -45,6 +48,17 @@ export interface DeckAnswer {
 const record = (value: unknown): value is Record<string, unknown> => !!value && typeof value === "object" && !Array.isArray(value);
 const num = (value: unknown): number | null => typeof value === "number" && Number.isFinite(value) ? value : null;
 const int = (value: unknown): number => { if (typeof value !== "number" || !Number.isSafeInteger(value)) throw new Error("Expected an integer"); return value; };
+
+function maximumModel(raw: unknown): DeckMaximumModel {
+  if (!record(raw)) return "unspecified";
+  if (raw.kind === "independentNativeDrawSupport" && raw.performanceOrders === 120
+    && raw.ordinarySkillDraw === "binary32OfSystemRandomNextDouble" && raw.ordinarySkillComparison === "strictLessThan"
+    && raw.rootSeedRealizability === "notEstablished" && raw.bestOrderCertificate === "performanceOrderAndTerminalValuesOnly"
+    && raw.streamBaseSeedRole === "notAConstraint") return "independentNativeDrawSupport";
+  if (raw.kind === "deterministic" && raw.performanceOrders === 1 && raw.rootSeedRealizability === "notApplicable"
+    && raw.bestOrderCertificate === "notApplicable") return "deterministic";
+  return "unspecified";
+}
 
 function pair(value: unknown): DeckPair {
   if (!record(value)) throw new Error("Invalid team member");
@@ -88,6 +102,7 @@ export function parseDeckAnswer(json: string): DeckAnswer {
     result = {
       phase, elapsedMs: num(r.elapsedMs),
       aggregation: r.aggregation === "maximum" ? "maximum" : "expected",
+      maximumModel: maximumModel(r.maximumModel),
       goalKind: record(r.goal) && typeof r.goal.kind === "string" ? r.goal.kind : null,
       exitReason: typeof r.exitReason === "string" ? r.exitReason : null,
       metric: record(r.metric) && typeof r.metric.kind === "string" ? r.metric.kind : record(r.goal) && r.goal.kind === "power" ? "power" : "score",
