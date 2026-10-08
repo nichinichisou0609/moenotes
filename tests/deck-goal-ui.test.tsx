@@ -50,7 +50,7 @@ test("the objective has native labelled radio choices, with maximum gated by eng
   expect(ready).toContain('checked="" value="maximum"');
   expect(ready).not.toContain('disabled=""');
   expect(ready).toContain("current judgements and other conditions");
-  expect(ready).toContain("If skills have probabilistic activation conditions");
+  expect(ready).toContain("across all legal skill orders");
   expect(ready).toContain("complete, proven search");
   expect(ready).not.toContain("random seed");
   const unavailable = render({ ...defaultDeckGoalInput("free"), aggregation: "maximum" });

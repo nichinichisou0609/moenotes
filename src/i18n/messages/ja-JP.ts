@@ -17,7 +17,7 @@ export const jaJP = {
       description: "Moenotes API で公開プロフィール、ランキング、ガチャ情報、許可された gzip セーブを取得します。",
     }, developer: "開発者アプリ", developerHint: "アプリを作成するとすぐに認証情報が発行されます。Secret はサーバーのみで保管してください。", grants: "第三者アーカイブへのアクセス", grantsHint: "選択したアーカイブだけを共有します。", name: "アプリ名", website: "HTTPS ウェブサイト", description: "説明", create: "アプリを作成", emptyApps: "アプリはまだありません。", clientId: "Client ID", invite: "招待リンクをコピー", copy: "コピー", copied: "コピーしました", lookup: "アプリを検索", choose: "アップロード済みアーカイブを選択", emptyArchives: "利用できるアーカイブはありません。", authorize: "選択したアーカイブを許可", emptyGrants: "許可はまだありません。", revoke: "取り消す", confirmRevoke: "このアクセスを取り消しますか？", cancel: "キャンセル", refresh: "更新", generate: "シークレットを生成", rotate: "シークレットをローテーション", revokeSecret: "シークレットを取り消す", keyLimit: "有効なキーが2つあります。新しいキーを配置してから、古いキーを手動で取り消してください。", confirmRotate: "新しいキーを生成しますか？古いキーは手動で取り消すまで有効です。", secret: "クライアントシークレット", secretHint: "一度だけ表示されます。サーバーに安全に保存し、ブラウザコードには置かないでください。", dismiss: "シークレットを隠す", secretActive: "有効", secretMissing: "有効なシークレットなし", ready: "利用可能", disabled: "無効", error: "リクエストに失敗しました。", success: "保存しました", unavailable: "現在利用できません。", consent: "選択したアーカイブの全内容を読み取れます。信頼できるアプリだけを許可してください。" },
   deckWorkspace: {
-    objective: {"label": "探索の目標", "expected": "平均を重視", "maximum": "理論上の最高値", "expectedNote": "現在の判定とほかの条件を保ち、スキル順ごとの平均で編成を比較します。撃奏モードでは、適用されるランダムな結果も計算します。", "maximumNote": "フリーライブとチャレンジライブで、現在の判定とほかの条件を保ち、スキル順から理論上の最高値を探します。スキルに確率で発動する条件がある場合は、エンジンが宣言したモデルで計算します。探索が完全に終了し証明が成立した場合に、モデル内の最高値が確定します。", "unavailable": "この条件では理論上の最高値に未対応です。「平均を重視」で探索できます。", "loading": "理論上の最高値に対応しているか確認中…", "gekisouNote": "撃奏モードは「平均を重視」で探索します。フリーライブとチャレンジライブでは「理論上の最高値」を選べます。"},
+    objective: {"label": "探索の目標", "expected": "平均を重視", "maximum": "理論上の最高値", "expectedNote": "現在の判定とほかの条件を保ち、スキル順ごとの平均で編成を比較します。撃奏モードでは、適用されるランダムな結果も計算します。", "maximumNote": "フリーライブとチャレンジライブで、現在の判定とほかの条件を保ち、有効なすべてのスキル順の中で選択した目標の最高値を求めます。探索が完全に終了し証明が成立した場合に、計算モデル内の最高値が確定します。", "unavailable": "この条件では理論上の最高値に未対応です。「平均を重視」で探索できます。", "loading": "理論上の最高値に対応しているか確認中…", "gekisouNote": "撃奏モードは「平均を重視」で探索します。フリーライブとチャレンジライブでは「理論上の最高値」を選べます。"},
     "arenaSong": "アリーナ楽曲",
     "chooseArena": "アリーナ楽曲を選択",
     "noArena": "現在のサーバーデータにアリーナ楽曲はありません",
@@ -583,7 +583,7 @@ export const jaJP = {
       "maximumLabel": {"score": "理論上の最高スコア", "challengePoints": "1回の最大獲得 CP", "eventPoints": "1回の最大 PT", "eventItems": "1回の最大バッジ数"},
       "deterministicLabel": {"score": "スコア", "challengePoints": "1回の獲得 CP", "eventPoints": "1回の PT", "eventItems": "1回のバッジ数"},
       "maximumProven": "モデル内で最適と証明済み",
-      "maximumModelDeclared": "エンジンは今回の計算に使うランダムモデルを宣言しています。最適性の証明はそのモデルに適用されます。",
+      "maximumModelDeclared": "エンジンは今回の計算に使う計算モデルを宣言しています。最適性の証明はそのモデルに適用されます。",
       "maximumModelUnspecified": "このエンジンは認識できる最高値モデルの宣言を返していないため、最適性の証明を表示しません。",
       "bestOrder": "モデル内の最高値に対応するスキル順",
       "metricLabel": {"score": "期待スコア"},

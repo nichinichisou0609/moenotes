@@ -161,6 +161,24 @@ aggregation, checks Gekisou's hidden switch and effective Expected objective, an
 Maximum. Loading or unsupported Maximum remains selected and disabled, with searches blocked. The report identifies
 its synthetic scope, browser version, runtime hashes, request hashes and completed search checks.
 
+## Ordinary live data and the generic model boundary
+
+The public [master snapshot `1712ed6`](https://github.com/StarMoe-org/moenotes-masterdata/tree/1712ed6ded20dd9a7df0d154ce021c20ca0536fa)
+contains no probability condition `4011` referenced by ordinary member or support skill effects in any of its four
+regions (`jp`, `hk-tw-mo`, `en`, `kr`). This check follows every condition-group reference, including activation,
+trigger, release and execution-limit reset conditions. In this snapshot, `4011` references occur only in the Gekisou
+member and Gekisou support effects. For ordinary Free and Challenge Live with fixed play conditions, each skill order
+therefore has a deterministic score: Expected averages the 120 legal orders and Maximum takes the highest selected
+goal value across them. The initial play assumption is all Perfect; switching the objective preserves any changed
+judgements and other conditions. Gekisou currently uses Expected, including applicable random outcomes for supported
+inputs.
+
+The engine's generic Maximum contract also supports compatible input containing probability-triggered ordinary
+skills; this capability does not imply that such a skill exists in the published master snapshot. For those inputs,
+`independentNativeDrawSupport` maximizes over outcomes allowed by each native draw, without proving that one integer
+PRNG root seed realizes the whole sequence. `bestOrder` records the skill order and terminal values, not a native
+seed replay certificate. This technical boundary does not add probability draws to an ordinary team that has none.
+
 Maximum answers carry `maximumModel`. The page recognizes the current independent native-draw support declaration,
 including `rootSeedRealizability: "notEstablished"`, `streamBaseSeedRole: "notAConstraint"` and
 `bestOrderCertificate: "performanceOrderAndTerminalValuesOnly"`. Missing or unknown metadata is displayed as
